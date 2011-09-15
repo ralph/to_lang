@@ -1,5 +1,6 @@
 require "to_lang/connector"
 require "to_lang/translatable"
+require "to_lang/translatable_meta"
 
 $KCODE = 'u' unless RUBY_VERSION >= "1.9"
 
@@ -22,11 +23,15 @@ module ToLang
     #
     # @return [Class, Boolean] @Array@ if initialization succeeded, @false@ if this method has already been called successfully.
     #
-    def start(key)
+    def start(key, disable_meta_magic = false)
       return false if defined?(@connector) && !@connector.nil?
       @connector = Connector.new key
       String.send :include, Translatable
       Array.send :include, Translatable
+      unless disable_meta_magic
+        String.send :include, TranslatableMeta
+        Array.send :include, TranslatableMeta
+      end
     end
   end
 end
